@@ -2,11 +2,13 @@
   "name": "react-native-tab-view",
   "version": "0.0.71-beta.0",
   "description": "Tab view component for React Native",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "files": [
+    "dist/",
     "src/"
   ],
   "scripts": {
+    "compile": "babel src -d dist --ignore *-test.js",
     "test": "jest",
     "flow": "flow",
     "lint": "eslint ."
