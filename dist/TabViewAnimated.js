@@ -116,7 +116,6 @@ position:position};return _this;
 this._mounted=true;
 this._panXListener=this.state.panX.addListener(this._trackPanX);
 this._offsetXListener=this.state.offsetX.addListener(this._trackOffsetX);
-npm;
 
 this.props.onTabCreate&&this.props.onTabCreate(this.props.navigationState.routeName,this);
 }},{key:'componentWillUnmount',value:function componentWillUnmount()
@@ -292,7 +291,7 @@ return(
 React.createElement(_reactNative.View,{
 onLayout:this._handleLayout,
 loaded:this.state.loaded,
-style:[styles.container,this.props.style],__source:{fileName:_jsxFileName,lineNumber:292}},
+style:[styles.container,this.props.style],__source:{fileName:_jsxFileName,lineNumber:291}},
 
 renderHeader&&renderHeader(props),
 renderPager(_extends({},

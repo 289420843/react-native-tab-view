@@ -116,7 +116,6 @@ export default class TabViewAnimated<T: Route<*>> extends React.Component<
     this._mounted = true;
     this._panXListener = this.state.panX.addListener(this._trackPanX);
     this._offsetXListener = this.state.offsetX.addListener(this._trackOffsetX);
-npm
     // shenglin add
     this.props.onTabCreate && this.props.onTabCreate(this.props.navigationState.routeName,this);
   }
