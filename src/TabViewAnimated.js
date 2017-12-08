@@ -200,8 +200,11 @@ export default class TabViewAnimated<T: Route<*>> extends React.Component<
   };
 
   _handleLayout = (e: any) => {
-    const { height, width } = e.nativeEvent.layout;
-
+    let { height, width } = e.nativeEvent.layout;
+    if (global.__WEB__ && window.__HTMLScale__) {
+      height = height / window.__HTMLScale__;
+      width = width / window.__HTMLScale__;
+    }
     if (
       this.state.layout.width === width &&
       this.state.layout.height === height
