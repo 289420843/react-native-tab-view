@@ -4,9 +4,9 @@ import { Animated } from 'react-native';
 import type { Node } from 'react';
 import type { StyleObj } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
-export type Route<T: { key: string, testID?: string }> = T;
+export type Route<T: { key: string }> = $Exact<T>;
 
-export type NavigationState<T: { key: string }> = {
+export type NavigationState<T> = {
   index: number,
   routes: Array<T>,
 };
@@ -27,13 +27,10 @@ export type SceneRendererProps<T> = {
     measured: boolean,
   },
   navigationState: NavigationState<T>,
+  panX: Animated.Value,
+  offsetX: Animated.Value,
   position: any,
   jumpToIndex: (index: number) => void,
-  getLastPosition: () => number,
-  subscribe: (
-    event: SubscriptionName,
-    callback: Function
-  ) => { remove: Function },
   useNativeDriver: boolean,
 };
 
@@ -44,19 +41,13 @@ export type PagerRendererProps<T> = {
   navigationState: NavigationState<T>,
   panX: Animated.Value,
   offsetX: Animated.Value,
+  canJumpToTab: (route: T) => boolean,
   jumpToIndex: (index: number) => void,
-  getLastPosition: () => number,
-  subscribe: (
-    event: SubscriptionName,
-    callback: Function
-  ) => { remove: Function },
   useNativeDriver: boolean,
   animationEnabled?: boolean,
   swipeEnabled?: boolean,
   children: Node,
 };
-
-export type SubscriptionName = 'reset' | 'position';
 
 export type TransitionProps = {
   progress: number,
@@ -71,7 +62,8 @@ export type TransitionConfigurator = (
   nextTransitionProps: TransitionProps
 ) => TransitionSpec;
 
-export type PagerProps = {
+export type PagerProps<T> = {
+  canJumpToTab: (route: T) => boolean,
   configureTransition?: TransitionConfigurator,
   animationEnabled?: boolean,
   swipeEnabled?: boolean,

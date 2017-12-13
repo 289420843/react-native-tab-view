@@ -12,7 +12,6 @@ import {
 import { PagerRendererPropType } from './TabViewPropTypes';
 import type {
   PagerRendererProps,
-  Route,
   TransitionConfigurator,
 } from './TabViewTypeDefinitions';
 
@@ -61,9 +60,7 @@ const DefaultTransitionSpec = {
   friction: 35,
 };
 
-export default class TabViewPagerPan<T: Route<*>> extends React.Component<
-  Props<T>
-> {
+export default class TabViewPagerPan<T: *> extends React.Component<Props<T>> {
   static propTypes = {
     ...PagerRendererPropType,
     configureTransition: PropTypes.func.isRequired,
@@ -74,6 +71,7 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
   };
 
   static defaultProps = {
+    canJumpToTab: () => true,
     configureTransition: () => DefaultTransitionSpec,
     initialLayout: {
       height: 0,
@@ -93,18 +91,10 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
     });
   }
 
-  componentDidMount() {
-    this._resetListener = this.props.subscribe('reset', this._transitionTo);
-  }
-
   componentDidUpdate(prevProps: Props<T>) {
     if (prevProps.navigationState.index !== this.props.navigationState.index) {
       this._transitionTo(this.props.navigationState.index);
     }
-  }
-
-  componentWillUnmount() {
-    this._resetListener && this._resetListener.remove();
   }
 
   _isMovingHorizontally = (evt: GestureEvent, gestureState: GestureState) => {
@@ -190,7 +180,14 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
       );
     }
 
-    this._transitionTo(isFinite(nextIndex) ? nextIndex : currentIndex);
+    if (
+      !isFinite(nextIndex) ||
+      !this.props.canJumpToTab(this.props.navigationState.routes[nextIndex])
+    ) {
+      nextIndex = currentIndex;
+    }
+
+    this._transitionTo(nextIndex);
   };
 
   _transitionTo = (index: number) => {
@@ -224,7 +221,6 @@ export default class TabViewPagerPan<T: Route<*>> extends React.Component<
   };
 
   _panResponder: any;
-  _resetListener: any;
   _pendingIndex: ?number;
 
   render() {

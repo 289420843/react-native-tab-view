@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { View, ViewPagerAndroid, StyleSheet, I18nManager } from 'react-native';
 import { PagerRendererPropType } from './TabViewPropTypes';
-import type { PagerRendererProps, Route } from './TabViewTypeDefinitions';
+import type { PagerRendererProps } from './TabViewTypeDefinitions';
 
 type PageScrollEvent = {
   nativeEvent: {
@@ -16,62 +16,32 @@ type PageScrollState = 'dragging' | 'settling' | 'idle';
 
 type Props<T> = PagerRendererProps<T>;
 
-export default class TabViewPagerAndroid<T: Route<*>> extends React.Component<
+export default class TabViewPagerAndroid<T: *> extends React.Component<
   Props<T>
 > {
   static propTypes = PagerRendererPropType;
+
+  static defaultProps = {
+    canJumpToTab: () => true,
+  };
 
   constructor(props: Props<T>) {
     super(props);
     this._currentIndex = this.props.navigationState.index;
   }
 
-  componentDidMount() {
-    this._resetListener = this.props.subscribe('reset', this._handlePageChange);
-  }
-
-  componentWillReceiveProps(nextProps: Props<T>) {
+  componentDidUpdate(prevProps: Props<T>) {
     if (
-      this.props.layout !== nextProps.layout ||
-      React.Children.count(this.props.children) !==
-        React.Children.count(nextProps.children)
+      this.props.layout !== prevProps.layout ||
+      this.props.navigationState.routes.length !==
+        prevProps.navigationState.routes.length ||
+      this.props.navigationState.index !== prevProps.navigationState.index
     ) {
-      this._animationFrameCallback = () => {
-        if (this._viewPager) {
-          const { navigationState } = nextProps;
-          const page = I18nManager.isRTL
-            ? navigationState.routes.length - (navigationState.index + 1)
-            : navigationState.index;
-
-          this._viewPager.setPageWithoutAnimation(page);
-        }
-      };
-
-      if (!this._isRequestingAnimationFrame) {
-        this._isRequestingAnimationFrame = true;
-
-        global.requestAnimationFrame(() => {
-          this._isRequestingAnimationFrame = false;
-
-          if (this._animationFrameCallback) {
-            this._animationFrameCallback();
-          }
-        });
-      }
+      this._handlePageChange(this.props.navigationState.index);
     }
   }
 
-  componentDidUpdate() {
-    this._handlePageChange(this.props.navigationState.index);
-  }
-
-  componentWillUnmount() {
-    this._resetListener && this._resetListener.remove();
-  }
-
-  _animationFrameCallback: ?() => void;
-  _isRequestingAnimationFrame: boolean = false;
-  _resetListener: Object;
+  _pageChangeCallabck: any;
   _viewPager: ?ViewPagerAndroid;
   _isIdle: boolean = true;
   _currentIndex = 0;
@@ -81,16 +51,16 @@ export default class TabViewPagerAndroid<T: Route<*>> extends React.Component<
       ? this.props.navigationState.routes.length - (index + 1)
       : index;
 
-  _setPage = (index: number) => {
-    const { _viewPager } = this;
-    if (_viewPager) {
-      this._animationFrameCallback = null;
+  _setPage = (index: number, animated = true) => {
+    const pager = this._viewPager;
 
+    if (pager) {
       const page = this._getPageIndex(index);
-      if (this.props.animationEnabled !== false) {
-        _viewPager.setPage(page);
+
+      if (this.props.animationEnabled === false || animated === false) {
+        pager.setPageWithoutAnimation(page);
       } else {
-        _viewPager.setPageWithoutAnimation(page);
+        pager.setPage(page);
       }
     }
   };
@@ -117,7 +87,15 @@ export default class TabViewPagerAndroid<T: Route<*>> extends React.Component<
 
   _handlePageScrollStateChanged = (e: PageScrollState) => {
     this._isIdle = e === 'idle';
-    this.props.jumpToIndex(this._currentIndex);
+
+    let nextIndex = this._currentIndex;
+
+    if (this.props.canJumpToTab(this.props.navigationState.routes[nextIndex])) {
+      this.props.jumpToIndex(nextIndex);
+    } else {
+      this._setPage(this.props.navigationState.index);
+      this._currentIndex = this.props.navigationState.index;
+    }
   };
 
   _handlePageSelected = (e: PageScrollEvent) => {

@@ -3,33 +3,38 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { Animated, StyleSheet, View } from 'react-native';
-import * as GestureHandler from 'react-native-gesture-handler';
 import { PagerRendererPropType } from './TabViewPropTypes';
-import type { PagerRendererProps, Route } from './TabViewTypeDefinitions';
+import type { PagerRendererProps } from './TabViewTypeDefinitions';
 
 type Props<T> = PagerRendererProps<T> & {
   swipeDistanceThreshold?: number,
   swipeVelocityThreshold?: number,
+  GestureHandler: any,
 };
 
 const DefaultTransitionSpec = {
   timing: Animated.spring,
-  tension: 300,
-  friction: 35,
+  tension: 75,
+  friction: 25,
 };
 
-export default class TabViewPagerExperimental<
-  T: Route<*>
-> extends React.Component<Props<T>> {
+export default class TabViewPagerExperimental<T: *> extends React.Component<
+  Props<T>
+> {
   static propTypes = {
     ...PagerRendererPropType,
     swipeDistanceThreshold: PropTypes.number,
     swipeVelocityThreshold: PropTypes.number,
+    GestureHandler: PropTypes.object,
   };
 
-  componentDidMount() {
-    this._resetListener = this.props.subscribe('reset', this._transitionTo);
-  }
+  static defaultProps = {
+    GestureHandler:
+      global.__expo && global.__expo.DangerZone
+        ? global.__expo.DangerZone.GestureHandler
+        : undefined,
+    canJumpToTab: () => true,
+  };
 
   componentDidUpdate(prevProps: Props<T>) {
     if (prevProps.navigationState.index !== this.props.navigationState.index) {
@@ -37,11 +42,9 @@ export default class TabViewPagerExperimental<
     }
   }
 
-  componentWillUnmount() {
-    this._resetListener.remove();
-  }
-
   _handleHandlerStateChange = event => {
+    const { GestureHandler } = this.props;
+
     if (event.nativeEvent.state === GestureHandler.State.END) {
       const {
         navigationState,
@@ -76,11 +79,18 @@ export default class TabViewPagerExperimental<
         );
       }
 
-      this._transitionTo(isFinite(nextIndex) ? nextIndex : currentIndex);
+      if (
+        !isFinite(nextIndex) ||
+        !this.props.canJumpToTab(this.props.navigationState.routes[nextIndex])
+      ) {
+        nextIndex = currentIndex;
+      }
+
+      this._transitionTo(nextIndex, velocityX);
     }
   };
 
-  _transitionTo = (index: number) => {
+  _transitionTo = (index: number, velocity?: number) => {
     const offset = -index * this.props.layout.width;
 
     if (this.props.animationEnabled === false) {
@@ -96,11 +106,13 @@ export default class TabViewPagerExperimental<
       timing(this.props.panX, {
         ...transitionConfig,
         toValue: 0,
+        velocity,
         useNativeDriver,
       }),
       timing(this.props.offsetX, {
         ...transitionConfig,
         toValue: offset,
+        velocity,
         useNativeDriver,
       }),
     ]).start(({ finished }) => {
@@ -113,11 +125,11 @@ export default class TabViewPagerExperimental<
     this._pendingIndex = index;
   };
 
-  _resetListener: any;
   _pendingIndex: ?number;
 
   render() {
     const {
+      GestureHandler,
       panX,
       offsetX,
       layout,
