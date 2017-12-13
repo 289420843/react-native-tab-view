@@ -103,9 +103,7 @@ Container component responsible for managing tab transitions.
 
 - `navigationState` - the current navigation state
 - `onIndexChange` - callback for when the current tab index changes, should do the `setState`
-- `onPositionChange` - callback called with position value as it changes (e.g. - on swipe or tab change), avoid doing anything expensive here
 - `canJumpToTab` - optional callback which accepts a route, and returns a boolean indicating whether jumping to the tab is allowed
-- `lazy` - whether to load tabs lazily when you start switching
 - `initialLayout` - optional object containing the initial `height` and `width`, can be passed to prevent the one frame delay in rendering
 - `renderHeader` - optional callback which returns a react element to use as top tab bar
 - `renderFooter` - optional callback which returns a react element to use as bottom tab bar
@@ -178,13 +176,21 @@ Cross-platform pager component based on [`react-native-gesture-handler`](https:/
 
 #### Props
 
+- `GestureHandler` - the gesture handler module to use
 - `animationEnabled` - whether to enable page change animation
 - `swipeEnabled` - whether to enable swipe gestures
 - `useNativeDriver` - whether to use native animations
 - `children` - React Element(s) to render
 
-This pager is still experimental as the underlying library is still in alpha. To use this pager, you'll need to [link the `react-native-gesture-handler` library](https://github.com/kmagiera/react-native-gesture-handler#installation).
+This pager is still experimental as the underlying library is still in alpha. To use this pager, you'll need to [link the `react-native-gesture-handler` library](https://github.com/kmagiera/react-native-gesture-handler#installation), and pass it as a prop to the pager:
 
+```js
+import * as GestureHandler from 'react-native-gesture-handler';
+
+...
+
+<TabViewPagerExperimental {...props} GestureHandler={GestureHandler} />
+```
 
 ## Caveats
 

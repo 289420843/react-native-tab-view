@@ -5,17 +5,17 @@ import { Animated, StyleSheet } from 'react-native';
 import { TabViewAnimated, TabBar } from 'react-native-tab-view';
 import BasicListView from './BasicListView';
 
-import type { NavigationState } from 'react-native-tab-view/types';
+import type { Route, NavigationState } from 'react-native-tab-view/types';
 
-type Route = {
-  key: string,
-  title: string,
-};
-
-type State = NavigationState<Route>;
+type State = NavigationState<
+  Route<{
+    key: string,
+    title: string,
+  }>
+>;
 
 export default class TopBarTextExample extends PureComponent<*, State> {
-  static title = 'Scroll views with lazy load';
+  static title = 'Scroll views';
   static backgroundColor = '#fff';
   static tintColor = '#222';
   static appbarElevation = 0;
@@ -33,11 +33,10 @@ export default class TopBarTextExample extends PureComponent<*, State> {
   _second: ?BasicListView;
   _third: ?BasicListView;
 
-  _handleIndexChange = index => {
+  _handleIndexChange = index =>
     this.setState({
       index,
     });
-  };
 
   _handleTabItemPress = ({ route }) => {
     if (route !== this.state.routes[this.state.index]) {
@@ -79,19 +78,17 @@ export default class TopBarTextExample extends PureComponent<*, State> {
     );
   };
 
-  _renderHeader = props => {
-    return (
-      <TabBar
-        {...props}
-        pressColor="rgba(255, 64, 129, .5)"
-        onTabPress={this._handleTabItemPress}
-        renderLabel={this._renderLabel(props)}
-        indicatorStyle={styles.indicator}
-        tabStyle={styles.tab}
-        style={styles.tabbar}
-      />
-    );
-  };
+  _renderHeader = props => (
+    <TabBar
+      {...props}
+      pressColor="rgba(255, 64, 129, .5)"
+      onTabPress={this._handleTabItemPress}
+      renderLabel={this._renderLabel(props)}
+      indicatorStyle={styles.indicator}
+      tabStyle={styles.tab}
+      style={styles.tabbar}
+    />
+  );
 
   _renderScene = ({ route }) => {
     switch (route.key) {
@@ -131,7 +128,6 @@ export default class TopBarTextExample extends PureComponent<*, State> {
         renderScene={this._renderScene}
         renderHeader={this._renderHeader}
         onIndexChange={this._handleIndexChange}
-        lazy
       />
     );
   }
