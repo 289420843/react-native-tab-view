@@ -21,6 +21,10 @@ TabViewPagerAndroid=function(_React$Component){_inherits(TabViewPagerAndroid,_Re
 
 
 
+
+
+
+
 function TabViewPagerAndroid(props){_classCallCheck(this,TabViewPagerAndroid);var _this=_possibleConstructorReturn(this,(TabViewPagerAndroid.__proto__||Object.getPrototypeOf(TabViewPagerAndroid)).call(this,
 props));_this.
 
@@ -39,40 +43,6 @@ props));_this.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-_isRequestingAnimationFrame=false;_this.
-
-
 _isIdle=true;_this.
 _currentIndex=0;_this.
 
@@ -81,16 +51,16 @@ _reactNative.I18nManager.isRTL?
 _this.props.navigationState.routes.length-(index+1):
 index);};_this.
 
-_setPage=function(index){var
-_viewPager=_this._viewPager;
-if(_viewPager){
-_this._animationFrameCallback=null;
+_setPage=function(index){var animated=arguments.length>1&&arguments[1]!==undefined?arguments[1]:true;
+var pager=_this._viewPager;
 
+if(pager){
 var page=_this._getPageIndex(index);
-if(_this.props.animationEnabled!==false){
-_viewPager.setPage(page);
+
+if(_this.props.animationEnabled===false||animated===false){
+pager.setPageWithoutAnimation(page);
 }else{
-_viewPager.setPageWithoutAnimation(page);
+pager.setPage(page);
 }
 }
 };_this.
@@ -117,7 +87,15 @@ _reactNative.I18nManager.isRTL?1:-1));
 
 _handlePageScrollStateChanged=function(e){
 _this._isIdle=e==='idle';
-_this.props.jumpToIndex(_this._currentIndex);
+
+var nextIndex=_this._currentIndex;
+
+if(_this.props.canJumpToTab(_this.props.navigationState.routes[nextIndex])){
+_this.props.jumpToIndex(nextIndex);
+}else{
+_this._setPage(_this.props.navigationState.index);
+_this._currentIndex=_this.props.navigationState.index;
+}
 };_this.
 
 _handlePageSelected=function(e){
@@ -125,7 +103,7 @@ var index=_this._getPageIndex(e.nativeEvent.position);
 _this._currentIndex=index;
 };_this.
 
-_setRef=function(el){return _this._viewPager=el;};_this._currentIndex=_this.props.navigationState.index;return _this;}_createClass(TabViewPagerAndroid,[{key:'componentDidMount',value:function componentDidMount(){this._resetListener=this.props.subscribe('reset',this._handlePageChange);}},{key:'componentWillReceiveProps',value:function componentWillReceiveProps(nextProps){var _this2=this;if(this.props.layout!==nextProps.layout||React.Children.count(this.props.children)!==React.Children.count(nextProps.children)){this._animationFrameCallback=function(){if(_this2._viewPager){var navigationState=nextProps.navigationState;var page=_reactNative.I18nManager.isRTL?navigationState.routes.length-(navigationState.index+1):navigationState.index;_this2._viewPager.setPageWithoutAnimation(page);}};if(!this._isRequestingAnimationFrame){this._isRequestingAnimationFrame=true;global.requestAnimationFrame(function(){_this2._isRequestingAnimationFrame=false;if(_this2._animationFrameCallback){_this2._animationFrameCallback();}});}}}},{key:'componentDidUpdate',value:function componentDidUpdate(){this._handlePageChange(this.props.navigationState.index);}},{key:'componentWillUnmount',value:function componentWillUnmount(){this._resetListener&&this._resetListener.remove();}},{key:'render',value:function render()
+_setRef=function(el){return _this._viewPager=el;};_this._currentIndex=_this.props.navigationState.index;return _this;}_createClass(TabViewPagerAndroid,[{key:'componentDidUpdate',value:function componentDidUpdate(prevProps){if(this.props.layout!==prevProps.layout||this.props.navigationState.routes.length!==prevProps.navigationState.routes.length||this.props.navigationState.index!==prevProps.navigationState.index){this._handlePageChange(this.props.navigationState.index);}}},{key:'render',value:function render()
 
 {var _props=
 this.props,children=_props.children,navigationState=_props.navigationState,swipeEnabled=_props.swipeEnabled;
@@ -133,7 +111,7 @@ var content=React.Children.map(children,function(child,i){return(
 React.createElement(_reactNative.View,{
 key:navigationState.routes[i].key,
 testID:navigationState.routes[i].testID,
-style:styles.page,__source:{fileName:_jsxFileName,lineNumber:133}},
+style:styles.page,__source:{fileName:_jsxFileName,lineNumber:111}},
 
 child));});
 
@@ -155,12 +133,12 @@ onPageScroll:this._handlePageScroll,
 onPageScrollStateChanged:this._handlePageScrollStateChanged,
 onPageSelected:this._handlePageSelected,
 style:styles.container,
-ref:this._setRef,__source:{fileName:_jsxFileName,lineNumber:149}},
+ref:this._setRef,__source:{fileName:_jsxFileName,lineNumber:127}},
 
 content));
 
 
-}}]);return TabViewPagerAndroid;}(React.Component);TabViewPagerAndroid.propTypes=_TabViewPropTypes.PagerRendererPropType;exports.default=TabViewPagerAndroid;
+}}]);return TabViewPagerAndroid;}(React.Component);TabViewPagerAndroid.propTypes=_TabViewPropTypes.PagerRendererPropType;TabViewPagerAndroid.defaultProps={canJumpToTab:function canJumpToTab(){return true;}};exports.default=TabViewPagerAndroid;
 
 
 var styles=_reactNative.StyleSheet.create({

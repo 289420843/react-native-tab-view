@@ -14,6 +14,8 @@ index:_propTypes2.default.number.isRequired});
 
 
 var SceneRendererPropType=exports.SceneRendererPropType={
+panX:_propTypes2.default.object.isRequired,
+offsetX:_propTypes2.default.object.isRequired,
 layout:_propTypes2.default.shape({
 measured:_propTypes2.default.bool.isRequired,
 height:_propTypes2.default.number.isRequired,
@@ -22,8 +24,6 @@ isRequired,
 navigationState:NavigationStatePropType.isRequired,
 position:_propTypes2.default.object.isRequired,
 jumpToIndex:_propTypes2.default.func.isRequired,
-getLastPosition:_propTypes2.default.func.isRequired,
-subscribe:_propTypes2.default.func.isRequired,
 useNativeDriver:_propTypes2.default.bool};
 
 
@@ -36,9 +36,8 @@ isRequired,
 navigationState:NavigationStatePropType.isRequired,
 panX:_propTypes2.default.instanceOf(_reactNative.Animated.Value).isRequired,
 offsetX:_propTypes2.default.instanceOf(_reactNative.Animated.Value).isRequired,
+canJumpToTab:_propTypes2.default.func.isRequired,
 jumpToIndex:_propTypes2.default.func.isRequired,
-getLastPosition:_propTypes2.default.func.isRequired,
-subscribe:_propTypes2.default.func.isRequired,
 animationEnabled:_propTypes2.default.bool,
 swipeEnabled:_propTypes2.default.bool,
 useNativeDriver:_propTypes2.default.bool,

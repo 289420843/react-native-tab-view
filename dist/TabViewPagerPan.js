@@ -52,7 +52,6 @@ var _TabViewPropTypes=require('./TabViewPropTypes');function _interopRequireDefa
 
 
 
-
 var DEAD_ZONE=12;
 
 var DefaultTransitionSpec={
@@ -62,15 +61,6 @@ friction:35};var
 
 
 TabViewPagerPan=function(_React$Component){_inherits(TabViewPagerPan,_React$Component);function TabViewPagerPan(){var _ref;var _temp,_this,_ret;_classCallCheck(this,TabViewPagerPan);for(var _len=arguments.length,args=Array(_len),_key=0;_key<_len;_key++){args[_key]=arguments[_key];}return _ret=(_temp=(_this=_possibleConstructorReturn(this,(_ref=TabViewPagerPan.__proto__||Object.getPrototypeOf(TabViewPagerPan)).call.apply(_ref,[this].concat(args))),_this),_this.
-
-
-
-
-
-
-
-
-
 
 
 
@@ -190,7 +180,14 @@ navigationState.routes.length-1));
 
 }
 
-_this._transitionTo(isFinite(nextIndex)?nextIndex:currentIndex);
+if(
+!isFinite(nextIndex)||
+!_this.props.canJumpToTab(_this.props.navigationState.routes[nextIndex]))
+{
+nextIndex=currentIndex;
+}
+
+_this._transitionTo(nextIndex);
 },_this.
 
 _transitionTo=function(index){
@@ -221,8 +218,7 @@ _this._pendingIndex=null;
 });
 
 _this._pendingIndex=index;
-},_temp),_possibleConstructorReturn(_this,_ret);}_createClass(TabViewPagerPan,[{key:'componentWillMount',value:function componentWillMount(){this._panResponder=_reactNative.PanResponder.create({onMoveShouldSetPanResponder:this._canMoveScreen,onMoveShouldSetPanResponderCapture:this._canMoveScreen,onPanResponderGrant:this._startGesture,onPanResponderMove:this._respondToGesture,onPanResponderTerminate:this._finishGesture,onPanResponderRelease:this._finishGesture,onPanResponderTerminationRequest:function onPanResponderTerminationRequest(){return true;}});}},{key:'componentDidMount',value:function componentDidMount(){this._resetListener=this.props.subscribe('reset',this._transitionTo);}},{key:'componentDidUpdate',value:function componentDidUpdate(prevProps){if(prevProps.navigationState.index!==this.props.navigationState.index){this._transitionTo(this.props.navigationState.index);}}},{key:'componentWillUnmount',value:function componentWillUnmount(){this._resetListener&&this._resetListener.remove();}},{key:'render',value:function render()
-
+},_temp),_possibleConstructorReturn(_this,_ret);}_createClass(TabViewPagerPan,[{key:'componentWillMount',value:function componentWillMount(){this._panResponder=_reactNative.PanResponder.create({onMoveShouldSetPanResponder:this._canMoveScreen,onMoveShouldSetPanResponderCapture:this._canMoveScreen,onPanResponderGrant:this._startGesture,onPanResponderMove:this._respondToGesture,onPanResponderTerminate:this._finishGesture,onPanResponderRelease:this._finishGesture,onPanResponderTerminationRequest:function onPanResponderTerminationRequest(){return true;}});}},{key:'componentDidUpdate',value:function componentDidUpdate(prevProps){if(prevProps.navigationState.index!==this.props.navigationState.index){this._transitionTo(this.props.navigationState.index);}}},{key:'render',value:function render()
 
 
 
@@ -249,7 +245,7 @@ transform:[{translateX:translateX}]}:
 
 null]},
 
-this._panResponder.panHandlers,{__source:{fileName:_jsxFileName,lineNumber:242}}),
+this._panResponder.panHandlers,{__source:{fileName:_jsxFileName,lineNumber:238}}),
 
 React.Children.map(children,function(child,i){return(
 React.createElement(_reactNative.View,{
@@ -258,7 +254,7 @@ testID:navigationState.routes[i].testID,
 style:
 width?
 {width:width}:
-i===navigationState.index?_reactNative.StyleSheet.absoluteFill:null,__source:{fileName:_jsxFileName,lineNumber:255}},
+i===navigationState.index?_reactNative.StyleSheet.absoluteFill:null,__source:{fileName:_jsxFileName,lineNumber:251}},
 
 
 i===navigationState.index||width?child:null));})));
@@ -266,7 +262,7 @@ i===navigationState.index||width?child:null));})));
 
 
 
-}}]);return TabViewPagerPan;}(React.Component);TabViewPagerPan.propTypes=_extends({},_TabViewPropTypes.PagerRendererPropType,{configureTransition:_propTypes2.default.func.isRequired,swipeDistanceThreshold:_propTypes2.default.number,swipeVelocityThreshold:_propTypes2.default.number,onSwipeStart:_propTypes2.default.func,onSwipeEnd:_propTypes2.default.func});TabViewPagerPan.defaultProps={configureTransition:function configureTransition(){return DefaultTransitionSpec;},initialLayout:{height:0,width:0}};exports.default=TabViewPagerPan;
+}}]);return TabViewPagerPan;}(React.Component);TabViewPagerPan.propTypes=_extends({},_TabViewPropTypes.PagerRendererPropType,{configureTransition:_propTypes2.default.func.isRequired,swipeDistanceThreshold:_propTypes2.default.number,swipeVelocityThreshold:_propTypes2.default.number,onSwipeStart:_propTypes2.default.func,onSwipeEnd:_propTypes2.default.func});TabViewPagerPan.defaultProps={canJumpToTab:function canJumpToTab(){return true;},configureTransition:function configureTransition(){return DefaultTransitionSpec;},initialLayout:{height:0,width:0}};exports.default=TabViewPagerPan;
 
 
 var styles=_reactNative.StyleSheet.create({

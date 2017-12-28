@@ -44,19 +44,7 @@ var _TabViewPropTypes=require('./TabViewPropTypes');function _interopRequireDefa
 
 
 
-
-
-
-
-
-
-
-
-
 TabBar=function(_React$PureComponent){_inherits(TabBar,_React$PureComponent);
-
-
-
 
 
 
@@ -88,22 +76,27 @@ initialVisibility=0;
 }
 }
 
-_this.state={
-offset:new _reactNative.Animated.Value(0),
-visibility:new _reactNative.Animated.Value(initialVisibility),
-initialOffset:{
-x:_this._getScrollAmount(_this.props,_this.props.navigationState.index),
-y:0}};return _this;
+var initialOffset=
+_this.props.scrollEnabled&&_this.props.layout.width?
+{
+x:_this._getScrollAmount(
+_this.props,
+_this.props.navigationState.index),
 
+y:0}:
+
+undefined;
+
+_this.state={
+visibility:new _reactNative.Animated.Value(initialVisibility),
+scrollAmount:new _reactNative.Animated.Value(0),
+initialOffset:initialOffset};return _this;
 
 }_createClass(TabBar,[{key:'componentDidMount',value:function componentDidMount()
 
 {
 this._adjustScroll(this.props.navigationState.index);
-this._positionListener=this.props.subscribe(
-'position',
-this._adjustScroll);
-
+this.props.scrollEnabled&&this._startTrackingPosition();
 }},{key:'componentDidUpdate',value:function componentDidUpdate(
 
 prevProps){
@@ -114,21 +107,35 @@ if(prevTabWidth!==currentTabWidth&&currentTabWidth){
 this.state.visibility.setValue(1);
 }
 
-if(this.props.scrollEnabled){
-if(prevProps.navigationState!==this.props.navigationState){
-this._resetScrollOffset(this.props);
-}else if(
+if(
+(prevProps.navigationState!==this.props.navigationState||
 prevProps.layout!==this.props.layout||
-prevTabWidth!==currentTabWidth)
+prevTabWidth!==currentTabWidth)&&
+this.props.navigationState.index!==this._pendingIndex)
 {
-this._adjustScroll(this.props.navigationState.index);
-}
+this._resetScroll(
+this.props.navigationState.index,
+Boolean(prevProps.layout.width));
+
+this._pendingIndex=null;
 }
 }},{key:'componentWillUnmount',value:function componentWillUnmount()
 
 {
-this._positionListener.remove();
+this._stopTrackingPosition();
 }},{key:'render',value:function render()
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -325,37 +332,22 @@ this._positionListener.remove();
 {var _this2=this;var _props=
 this.props,position=_props.position,navigationState=_props.navigationState,scrollEnabled=_props.scrollEnabled;var
 routes=navigationState.routes,index=navigationState.index;
-var maxDistance=this._getMaxScrollableDistance(this.props);
 var tabWidth=this._getTabWidth(this.props);
 var tabBarWidth=tabWidth*routes.length;
 
 
 var inputRange=[-1].concat(_toConsumableArray(routes.map(function(x,i){return i;})));
-var translateOutputRange=inputRange.map(
-function(i){return _this2._getScrollAmount(_this2.props,i)*-1;});
-
-
-var translateX=_reactNative.Animated.add(
-position.interpolate({
-inputRange:inputRange,
-outputRange:translateOutputRange}),
-
-this.state.offset).
-interpolate({
-inputRange:[-maxDistance,0],
-outputRange:[-maxDistance,0],
-extrapolate:'clamp'});
-
+var translateX=_reactNative.Animated.multiply(this.state.scrollAmount,-1);
 
 return(
-React.createElement(_reactNative.Animated.View,{style:[styles.tabBar,this.props.style],__source:{fileName:_jsxFileName,lineNumber:351}},
+React.createElement(_reactNative.Animated.View,{style:[styles.tabBar,this.props.style],__source:{fileName:_jsxFileName,lineNumber:343}},
 React.createElement(_reactNative.Animated.View,{
 pointerEvents:'none',
 style:[
 styles.indicatorContainer,
 scrollEnabled?
 {width:tabBarWidth,transform:[{translateX:translateX}]}:
-null],__source:{fileName:_jsxFileName,lineNumber:352}},
+null],__source:{fileName:_jsxFileName,lineNumber:344}},
 
 
 this._renderIndicator(_extends({},
@@ -363,8 +355,8 @@ this.props,{
 width:tabWidth}))),
 
 
-React.createElement(_reactNative.View,{style:styles.scroll,__source:{fileName:_jsxFileName,lineNumber:366}},
-React.createElement(_reactNative.ScrollView,{
+React.createElement(_reactNative.View,{style:styles.scroll,__source:{fileName:_jsxFileName,lineNumber:358}},
+React.createElement(_reactNative.Animated.ScrollView,{
 horizontal:true,
 keyboardShouldPersistTaps:'handled',
 scrollEnabled:scrollEnabled,
@@ -378,14 +370,23 @@ contentContainerStyle:[
 styles.tabContent,
 scrollEnabled?null:styles.container],
 
-scrollEventThrottle:16,
-onScroll:this._handleScroll,
+scrollEventThrottle:1,
+onScroll:_reactNative.Animated.event(
+[
+{
+nativeEvent:{
+contentOffset:{x:this.state.scrollAmount}}}],
+
+
+
+{useNativeDriver:true,listener:this._handleScroll}),
+
 onScrollBeginDrag:this._handleBeginDrag,
 onScrollEndDrag:this._handleEndDrag,
 onMomentumScrollBegin:this._handleMomentumScrollBegin,
 onMomentumScrollEnd:this._handleMomentumScrollEnd,
 contentOffset:this.state.initialOffset,
-ref:this._setRef,__source:{fileName:_jsxFileName,lineNumber:367}},
+ref:this._setRef,__source:{fileName:_jsxFileName,lineNumber:359}},
 
 routes.map(function(route,i){
 var focused=index===i;
@@ -455,22 +456,16 @@ accessibilityTraits:'button',
 pressColor:_this2.props.pressColor,
 pressOpacity:_this2.props.pressOpacity,
 delayPressIn:0,
-onPress:function onPress(){var _props2=
-_this2.props,onTabPress=_props2.onTabPress,jumpToIndex=_props2.jumpToIndex;
-jumpToIndex(i);
-if(onTabPress){
-onTabPress(scene);
-}
-},
-style:tabContainerStyle,__source:{fileName:_jsxFileName,lineNumber:448}},
+onPress:function onPress(){return _this2._handleTabPress(scene);},
+style:tabContainerStyle,__source:{fileName:_jsxFileName,lineNumber:449}},
 
-React.createElement(_reactNative.View,{pointerEvents:'none',style:styles.container,__source:{fileName:_jsxFileName,lineNumber:467}},
+React.createElement(_reactNative.View,{pointerEvents:'none',style:styles.container,__source:{fileName:_jsxFileName,lineNumber:462}},
 React.createElement(_reactNative.Animated.View,{
 style:[
 styles.tabItem,
 tabStyle,
 passedTabStyle,
-styles.container],__source:{fileName:_jsxFileName,lineNumber:468}},
+styles.container],__source:{fileName:_jsxFileName,lineNumber:463}},
 
 
 icon,
@@ -480,7 +475,7 @@ badge?
 React.createElement(_reactNative.Animated.View,{
 style:[
 styles.badge,
-{opacity:_this2.state.visibility}],__source:{fileName:_jsxFileName,lineNumber:480}},
+{opacity:_this2.state.visibility}],__source:{fileName:_jsxFileName,lineNumber:475}},
 
 
 badge):
@@ -494,7 +489,7 @@ null)));
 
 
 
-}}]);return TabBar;}(React.PureComponent);TabBar.propTypes=_extends({},_TabViewPropTypes.SceneRendererPropType,{scrollEnabled:_propTypes2.default.bool,pressColor:_TouchableItem2.default.propTypes.pressColor,pressOpacity:_TouchableItem2.default.propTypes.pressOpacity,getLabelText:_propTypes2.default.func,renderIcon:_propTypes2.default.func,renderLabel:_propTypes2.default.func,renderIndicator:_propTypes2.default.func,onTabPress:_propTypes2.default.func,labelStyle:_propTypes2.default.any,style:_propTypes2.default.any});TabBar.defaultProps={getLabelText:function getLabelText(_ref){var route=_ref.route;return route.title?route.title.toUpperCase():null;}};var _initialiseProps=function _initialiseProps(){var _this3=this;this._isManualScroll=false;this._isMomentumScroll=false;this._scrollOffset=0;this._renderLabel=function(scene){if(typeof _this3.props.renderLabel!=='undefined'){return _this3.props.renderLabel(scene);}var label=_this3.props.getLabelText(scene);if(typeof label!=='string'){return null;}return React.createElement(_reactNative.Animated.Text,{style:[styles.tabLabel,_this3.props.labelStyle],__source:{fileName:_jsxFileName,lineNumber:148}},label);};this._renderIndicator=function(props){if(typeof _this3.props.renderIndicator!=='undefined'){return _this3.props.renderIndicator(props);}var width=props.width,position=props.position,navigationState=props.navigationState;var translateX=_reactNative.Animated.multiply(_reactNative.Animated.multiply(position.interpolate({inputRange:[0,navigationState.routes.length-1],outputRange:[0,navigationState.routes.length-1],extrapolate:'clamp'}),width),_reactNative.I18nManager.isRTL?-1:1);return React.createElement(_reactNative.Animated.View,{style:[styles.indicator,{width:width,transform:[{translateX:translateX}]},_this3.props.indicatorStyle],__source:{fileName:_jsxFileName,lineNumber:171}});};this._getTabWidth=function(props){var layout=props.layout,navigationState=props.navigationState,tabStyle=props.tabStyle;var flattened=_reactNative.StyleSheet.flatten(tabStyle);if(flattened){switch(typeof flattened.width){case'number':return flattened.width;case'string':if(flattened.width.endsWith('%')){var _width=parseFloat(flattened.width);if(Number.isFinite(_width)){return layout.width*(_width/100);}}}}if(props.scrollEnabled){return layout.width/5*2;}return layout.width/navigationState.routes.length;};this._getMaxScrollableDistance=function(props){var layout=props.layout,navigationState=props.navigationState;if(layout.width===0){return 0;}var tabWidth=_this3._getTabWidth(props);var tabBarWidth=tabWidth*navigationState.routes.length;var maxDistance=tabBarWidth-layout.width;return Math.max(maxDistance,0);};this._normalizeScrollValue=function(props,value){var maxDistance=_this3._getMaxScrollableDistance(props);return Math.max(Math.min(value,maxDistance),0);};this._getScrollAmount=function(props,i){var layout=props.layout;var tabWidth=_this3._getTabWidth(props);var centerDistance=tabWidth*(i+1/2);var scrollAmount=centerDistance-layout.width/2;return _this3._normalizeScrollValue(props,scrollAmount);};this._resetScrollOffset=function(props){if(!props.scrollEnabled||!_this3._scrollView){return;}var scrollAmount=_this3._getScrollAmount(props,props.navigationState.index);_this3._scrollView&&_this3._scrollView.scrollTo({x:scrollAmount,animated:true});_reactNative.Animated.timing(_this3.state.offset,{toValue:0,duration:150,useNativeDriver:_this3.props.useNativeDriver}).start();};this._adjustScroll=function(index){if(!_this3.props.scrollEnabled||!_this3._scrollView){return;}var scrollAmount=_this3._getScrollAmount(_this3.props,index);_this3._scrollView&&_this3._scrollView.scrollTo({x:scrollAmount+_this3._scrollOffset,animated:false});};this._adjustOffset=function(value){if(!_this3._isManualScroll||!_this3.props.scrollEnabled){return;}var scrollAmount=_this3._getScrollAmount(_this3.props,_this3.props.navigationState.index);var scrollOffset=value-scrollAmount;if(_this3._isMomentumScroll){_reactNative.Animated.spring(_this3.state.offset,{toValue:-scrollOffset,tension:300,friction:35,useNativeDriver:_this3.props.useNativeDriver}).start();}else{_this3.state.offset.setValue(-scrollOffset);}_this3._scrollOffset=scrollOffset;};this._handleScroll=function(e){_this3._adjustOffset(e.nativeEvent.contentOffset.x);};this._handleBeginDrag=function(){_this3._isManualScroll=true;_this3._isMomentumScroll=false;};this._handleEndDrag=function(){global.requestAnimationFrame(function(){if(_this3._isMomentumScroll){return;}_this3._isManualScroll=false;});};this._handleMomentumScrollBegin=function(){_this3._isMomentumScroll=true;};this._handleMomentumScrollEnd=function(){_this3._isMomentumScroll=false;_this3._isManualScroll=false;};this._setRef=function(el){return _this3._scrollView=el;};};exports.default=TabBar;
+}}]);return TabBar;}(React.PureComponent);TabBar.propTypes=_extends({},_TabViewPropTypes.SceneRendererPropType,{scrollEnabled:_propTypes2.default.bool,pressColor:_TouchableItem2.default.propTypes.pressColor,pressOpacity:_TouchableItem2.default.propTypes.pressOpacity,getLabelText:_propTypes2.default.func,renderIcon:_propTypes2.default.func,renderLabel:_propTypes2.default.func,renderIndicator:_propTypes2.default.func,onTabPress:_propTypes2.default.func,labelStyle:_propTypes2.default.any,style:_propTypes2.default.any});TabBar.defaultProps={getLabelText:function getLabelText(_ref){var route=_ref.route;return typeof route.title==='string'?route.title.toUpperCase():route.title;}};var _initialiseProps=function _initialiseProps(){var _this3=this;this._isManualScroll=false;this._isMomentumScroll=false;this._scrollDelta=0;this._startTrackingPosition=function(){_this3._offsetXListener=_this3.props.offsetX.addListener(function(_ref2){var value=_ref2.value;_this3._lastOffsetX=value;_this3._handlePosition();});_this3._panXListener=_this3.props.panX.addListener(function(_ref3){var value=_ref3.value;_this3._lastPanX=value;_this3._handlePosition();});};this._stopTrackingPosition=function(){_this3.props.offsetX.removeListener(_this3._offsetXListener);_this3.props.panX.removeListener(_this3._panXListener);};this._handlePosition=function(){var _props2=_this3.props,navigationState=_props2.navigationState,layout=_props2.layout;var panX=typeof _this3._lastPanX==='number'?_this3._lastPanX:0;var offsetX=typeof _this3._lastOffsetX==='number'?_this3._lastOffsetX:-navigationState.index*layout.width;var value=(panX+offsetX)/-(layout.width||0.001);_this3._adjustScroll(value);};this._renderLabel=function(scene){if(typeof _this3.props.renderLabel!=='undefined'){return _this3.props.renderLabel(scene);}var label=_this3.props.getLabelText(scene);if(typeof label!=='string'){return null;}return React.createElement(_reactNative.Animated.Text,{style:[styles.tabLabel,_this3.props.labelStyle],__source:{fileName:_jsxFileName,lineNumber:177}},label);};this._renderIndicator=function(props){if(typeof _this3.props.renderIndicator!=='undefined'){return _this3.props.renderIndicator(props);}var width=props.width,position=props.position,navigationState=props.navigationState;var translateX=_reactNative.Animated.multiply(_reactNative.Animated.multiply(position.interpolate({inputRange:[0,navigationState.routes.length-1],outputRange:[0,navigationState.routes.length-1],extrapolate:'clamp'}),width),_reactNative.I18nManager.isRTL?-1:1);return React.createElement(_reactNative.Animated.View,{style:[styles.indicator,{width:width,transform:[{translateX:translateX}]},_this3.props.indicatorStyle],__source:{fileName:_jsxFileName,lineNumber:200}});};this._getTabWidth=function(props){var layout=props.layout,navigationState=props.navigationState,tabStyle=props.tabStyle;var flattened=_reactNative.StyleSheet.flatten(tabStyle);if(flattened){switch(typeof flattened.width){case'number':return flattened.width;case'string':if(flattened.width.endsWith('%')){var _width=parseFloat(flattened.width);if(Number.isFinite(_width)){return layout.width*(_width/100);}}}}if(props.scrollEnabled){return layout.width/5*2;}return layout.width/navigationState.routes.length;};this._handleTabPress=function(scene){_this3._pendingIndex=scene.index;_this3.props.jumpToIndex(scene.index);if(_this3.props.onTabPress){_this3.props.onTabPress(scene);}};this._handleScroll=function(event){if(_this3._isManualScroll){_this3._scrollDelta=_this3._getScrollAmount(_this3.props,_this3.props.navigationState.index)-event.nativeEvent.contentOffset.x;}};this._normalizeScrollValue=function(props,value){var layout=props.layout,navigationState=props.navigationState;var tabWidth=_this3._getTabWidth(props);var tabBarWidth=Math.max(tabWidth*navigationState.routes.length,layout.width);var maxDistance=tabBarWidth-layout.width;return Math.max(Math.min(value,maxDistance),0);};this._getScrollAmount=function(props,i){var layout=props.layout;var tabWidth=_this3._getTabWidth(props);var centerDistance=tabWidth*(i+1/2);var scrollAmount=centerDistance-layout.width/2;return _this3._normalizeScrollValue(props,scrollAmount);};this._adjustScroll=function(value){if(_this3.props.scrollEnabled){global.cancelAnimationFrame(_this3._scrollResetCallback);_this3._scrollView&&_this3._scrollView.scrollTo({x:_this3._normalizeScrollValue(_this3.props,_this3._getScrollAmount(_this3.props,value)-_this3._scrollDelta),animated:false});}};this._resetScroll=function(value){var animated=arguments.length>1&&arguments[1]!==undefined?arguments[1]:true;if(_this3.props.scrollEnabled){global.cancelAnimationFrame(_this3._scrollResetCallback);_this3._scrollResetCallback=global.requestAnimationFrame(function(){_this3._scrollDelta=0;_this3._scrollView&&_this3._scrollView.scrollTo({x:_this3._getScrollAmount(_this3.props,value),animated:animated});});}};this._handleBeginDrag=function(){_this3._isManualScroll=true;_this3._isMomentumScroll=false;};this._handleEndDrag=function(){global.requestAnimationFrame(function(){if(_this3._isMomentumScroll){return;}_this3._isManualScroll=false;});};this._handleMomentumScrollBegin=function(){_this3._isMomentumScroll=true;};this._handleMomentumScrollEnd=function(){_this3._isMomentumScroll=false;_this3._isManualScroll=false;};this._setRef=function(el){return _this3._scrollView=el&&el._component;};};exports.default=TabBar;
 
 
 var styles=_reactNative.StyleSheet.create({
@@ -526,7 +521,7 @@ color:'white',
 margin:8},
 
 tabItem:{
-flexGrow:1,
+flex:1,
 padding:8,
 alignItems:'center',
 justifyContent:'center'},
