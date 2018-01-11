@@ -109,10 +109,19 @@ export default class TabViewAnimated<T: *> extends React.Component<
 
   componentDidMount() {
     this._mounted = true;
+    /**
+     * shenglin add
+     */
+    this.props.screenProps && this.props.screenProps.onTabCreate && this.props.screenProps.onTabCreate(this.props.navigationState.routeName,this);
   }
 
   componentWillUnmount() {
     this._mounted = false;
+
+    /**
+     * shenglin add
+     */
+    this.props.screenProps && this.props.screenProps.onTabDestroy && this.props.screenProps.onTabDestroy(this.props.navigationState.routeName);
   }
 
   _mounted: boolean = false;

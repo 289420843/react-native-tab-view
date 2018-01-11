@@ -109,10 +109,19 @@ position:position};return _this;
 
 {
 this._mounted=true;
+
+
+
+this.props.screenProps&&this.props.screenProps.onTabCreate&&this.props.screenProps.onTabCreate(this.props.navigationState.routeName,this);
 }},{key:'componentWillUnmount',value:function componentWillUnmount()
 
 {
 this._mounted=false;
+
+
+
+
+this.props.screenProps&&this.props.screenProps.onTabDestroy&&this.props.screenProps.onTabDestroy(this.props.navigationState.routeName);
 }},{key:'render',value:function render()
 
 
@@ -197,7 +206,7 @@ return(
 React.createElement(_reactNative.View,{
 onLayout:this._handleLayout,
 loaded:this.state.loaded,
-style:[styles.container,this.props.style],__source:{fileName:_jsxFileName,lineNumber:197}},
+style:[styles.container,this.props.style],__source:{fileName:_jsxFileName,lineNumber:206}},
 
 renderHeader&&renderHeader(props),
 renderPager(_extends({},
