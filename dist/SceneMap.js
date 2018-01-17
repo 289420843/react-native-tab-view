@@ -2,12 +2,12 @@ Object.defineProperty(exports,"__esModule",{value:true});var _jsxFileName='src\\
 
 
 
-SceneMap;var _react=require('react');var _react2=_interopRequireDefault(_react);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}function SceneMap(scenes){var
-SceneComponent=function(_PureComponent){_inherits(SceneComponent,_PureComponent);function SceneComponent(){_classCallCheck(this,SceneComponent);return _possibleConstructorReturn(this,(SceneComponent.__proto__||Object.getPrototypeOf(SceneComponent)).apply(this,arguments));}_createClass(SceneComponent,[{key:'render',value:function render()
+SceneMap;var _react=require('react');var React=_interopRequireWildcard(_react);function _interopRequireWildcard(obj){if(obj&&obj.__esModule){return obj;}else{var newObj={};if(obj!=null){for(var key in obj){if(Object.prototype.hasOwnProperty.call(obj,key))newObj[key]=obj[key];}}newObj.default=obj;return newObj;}}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}function SceneMap(scenes){var
+SceneComponent=function(_React$PureComponent){_inherits(SceneComponent,_React$PureComponent);function SceneComponent(){_classCallCheck(this,SceneComponent);return _possibleConstructorReturn(this,(SceneComponent.__proto__||Object.getPrototypeOf(SceneComponent)).apply(this,arguments));}_createClass(SceneComponent,[{key:'render',value:function render()
 {
-return _react2.default.createElement(scenes[this.props.route.key],this.props);
-}}]);return SceneComponent;}(_react.PureComponent);
+return React.createElement(scenes[this.props.route.key],this.props);
+}}]);return SceneComponent;}(React.PureComponent);
 
 
-return function(_ref){var route=_ref.route;return _react2.default.createElement(SceneComponent,{key:route.key,route:route,__source:{fileName:_jsxFileName,lineNumber:12}});};
+return function(_ref){var route=_ref.route;return React.createElement(SceneComponent,{key:route.key,route:route,__source:{fileName:_jsxFileName,lineNumber:12}});};
 }
