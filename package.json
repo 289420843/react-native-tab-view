@@ -1,11 +1,11 @@
 {
-  "name": "sl-react-native-tab-view",
+  "name": "react-native-tab-view",
   "version": "0.0.74",
   "description": "Tab view component for React Native",
   "main": "dist/index.js",
   "files": [
-    "dist/",
-    "src/",
+    "src",
+    "dist",
     "types.js"
   ],
   "scripts": {
