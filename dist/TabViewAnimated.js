@@ -103,7 +103,7 @@ panX:panX,
 offsetX:offsetX,
 position:position};return _this;
 
-}_createClass(TabViewAnimated,[{key:'componentDidMount',value:function componentDidMount()
+}_createClass(TabViewAnimated,[{key:'componentWillMount',value:function componentWillMount()
 
 {
 this._mounted=true;
@@ -111,7 +111,7 @@ this._mounted=true;
 
 
 this.props.screenProps&&this.props.screenProps.onTabCreate&&this.props.screenProps.onTabCreate(this.props.navigationState.routeName,this.props.navigationState,this);
-}},{key:'componentWillUnmount',value:function componentWillUnmount()
+}},{key:'componentDidUnmount',value:function componentDidUnmount()
 
 {
 this._mounted=false;
