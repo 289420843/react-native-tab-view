@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { Animated, Platform, View, StyleSheet } from 'react-native';
-import { NavigationStatePropType } from './TabViewPropTypes';
+import {Animated, Platform, View, StyleSheet} from 'react-native';
+import {NavigationStatePropType} from './TabViewPropTypes';
 import type {
   Scene,
   SceneRendererProps,
@@ -48,10 +48,8 @@ switch (Platform.OS) {
     break;
 }
 
-export default class TabViewAnimated<T: *> extends React.Component<
-  Props<T>,
-  State
-> {
+export default class TabViewAnimated<T: *> extends React.Component<Props<T>,
+  State> {
   static propTypes = {
     navigationState: NavigationStatePropType.isRequired,
     onIndexChange: PropTypes.func.isRequired,
@@ -79,7 +77,7 @@ export default class TabViewAnimated<T: *> extends React.Component<
   constructor(props: Props<T>) {
     super(props);
 
-    const { navigationState } = this.props;
+    const {navigationState} = this.props;
     const layout = {
       ...this.props.initialLayout,
       measured: false,
@@ -112,7 +110,7 @@ export default class TabViewAnimated<T: *> extends React.Component<
     /**
      * shenglin add
      */
-    this.props.screenProps && this.props.screenProps.onTabCreate && this.props.screenProps.onTabCreate(this.props.navigationState.routeName,this);
+    this.props.screenProps && this.props.screenProps.onTabCreate && this.props.screenProps.onTabCreate(this.props.navigationState.routeName, this.props.navigationState, this);
   }
 
   componentWillUnmount() {
@@ -121,7 +119,7 @@ export default class TabViewAnimated<T: *> extends React.Component<
     /**
      * shenglin add
      */
-    this.props.screenProps && this.props.screenProps.onTabDestroy && this.props.screenProps.onTabDestroy(this.props.navigationState.routeName);
+    this.props.screenProps && this.props.screenProps.onTabDestroy && this.props.screenProps.onTabDestroy(this.props.navigationState.routeName, this.props.navigationState);
   }
 
   _mounted: boolean = false;
@@ -132,7 +130,7 @@ export default class TabViewAnimated<T: *> extends React.Component<
   };
 
   _handleLayout = (e: any) => {
-    let { height, width } = e.nativeEvent.layout;
+    let {height, width} = e.nativeEvent.layout;
     if (global.__WEB__ && window.__HTMLScale__) {
       height = height / window.__HTMLScale__;
       width = width / window.__HTMLScale__;
@@ -175,7 +173,7 @@ export default class TabViewAnimated<T: *> extends React.Component<
       return;
     }
 
-    const { canJumpToTab, navigationState } = this.props;
+    const {canJumpToTab, navigationState} = this.props;
 
     if (!canJumpToTab(navigationState.routes[index])) {
       return;
@@ -223,7 +221,7 @@ export default class TabViewAnimated<T: *> extends React.Component<
             });
 
             if (scene) {
-              return React.cloneElement(scene, { key: route.key });
+              return React.cloneElement(scene, {key: route.key});
             }
 
             return scene;

@@ -74,8 +74,6 @@ TabViewAnimated=function(_React$Component){_inherits(TabViewAnimated,_React$Comp
 
 
 
-
-
 function TabViewAnimated(props){_classCallCheck(this,TabViewAnimated);var _this=_possibleConstructorReturn(this,(TabViewAnimated.__proto__||Object.getPrototypeOf(TabViewAnimated)).call(this,
 props));_initialiseProps.call(_this);var
 
@@ -112,7 +110,7 @@ this._mounted=true;
 
 
 
-this.props.screenProps&&this.props.screenProps.onTabCreate&&this.props.screenProps.onTabCreate(this.props.navigationState.routeName,this);
+this.props.screenProps&&this.props.screenProps.onTabCreate&&this.props.screenProps.onTabCreate(this.props.navigationState.routeName,this.props.navigationState,this);
 }},{key:'componentWillUnmount',value:function componentWillUnmount()
 
 {
@@ -121,7 +119,7 @@ this._mounted=false;
 
 
 
-this.props.screenProps&&this.props.screenProps.onTabDestroy&&this.props.screenProps.onTabDestroy(this.props.navigationState.routeName);
+this.props.screenProps&&this.props.screenProps.onTabDestroy&&this.props.screenProps.onTabDestroy(this.props.navigationState.routeName,this.props.navigationState);
 }},{key:'render',value:function render()
 
 
@@ -206,7 +204,7 @@ return(
 React.createElement(_reactNative.View,{
 onLayout:this._handleLayout,
 loaded:this.state.loaded,
-style:[styles.container,this.props.style],__source:{fileName:_jsxFileName,lineNumber:206}},
+style:[styles.container,this.props.style],__source:{fileName:_jsxFileName,lineNumber:204}},
 
 renderHeader&&renderHeader(props),
 renderPager(_extends({},
@@ -232,7 +230,7 @@ return scene;
 renderFooter&&renderFooter(props)));
 
 
-}}]);return TabViewAnimated;}(React.Component);TabViewAnimated.propTypes={navigationState:_TabViewPropTypes.NavigationStatePropType.isRequired,onIndexChange:_propTypes2.default.func.isRequired,initialLayout:_propTypes2.default.shape({height:_propTypes2.default.number.isRequired,width:_propTypes2.default.number.isRequired}),canJumpToTab:_propTypes2.default.func.isRequired,renderPager:_propTypes2.default.func.isRequired,renderScene:_propTypes2.default.func.isRequired,renderHeader:_propTypes2.default.func,renderFooter:_propTypes2.default.func};TabViewAnimated.defaultProps={canJumpToTab:function canJumpToTab(){return true;},renderPager:function renderPager(props){return React.createElement(TabViewPager,_extends({},props,{__source:{fileName:_jsxFileName,lineNumber:71}}));},initialLayout:{height:0,width:0},useNativeDriver:false};var _initialiseProps=function _initialiseProps(){var _this3=this;this._mounted=false;this._renderScene=function(props){return _this3.props.renderScene(props);};this._handleLayout=function(e){var _e$nativeEvent$layout=e.nativeEvent.layout,height=_e$nativeEvent$layout.height,width=_e$nativeEvent$layout.width;if(global.__WEB__&&window.__HTMLScale__){height=height/window.__HTMLScale__;width=width/window.__HTMLScale__;}if(_this3.state.layout.width===width&&_this3.state.layout.height===height){return;}_this3.state.offsetX.setValue(-_this3.props.navigationState.index*width);_this3.state.layoutXY.setValue({x:width||0.001,y:height||0.001});_this3.setState({layout:{measured:true,height:height,width:width}});};this._buildSceneRendererProps=function(){return{panX:_this3.state.panX,offsetX:_this3.state.offsetX,position:_this3.state.position,layout:_this3.state.layout,navigationState:_this3.props.navigationState,jumpToIndex:_this3._jumpToIndex,useNativeDriver:_this3.props.useNativeDriver===true};};this._jumpToIndex=function(index){if(!_this3._mounted){return;}var _props2=_this3.props,canJumpToTab=_props2.canJumpToTab,navigationState=_props2.navigationState;if(!canJumpToTab(navigationState.routes[index])){return;}if(index!==navigationState.index){_this3.props.onIndexChange(index);}};};exports.default=TabViewAnimated;
+}}]);return TabViewAnimated;}(React.Component);TabViewAnimated.propTypes={navigationState:_TabViewPropTypes.NavigationStatePropType.isRequired,onIndexChange:_propTypes2.default.func.isRequired,initialLayout:_propTypes2.default.shape({height:_propTypes2.default.number.isRequired,width:_propTypes2.default.number.isRequired}),canJumpToTab:_propTypes2.default.func.isRequired,renderPager:_propTypes2.default.func.isRequired,renderScene:_propTypes2.default.func.isRequired,renderHeader:_propTypes2.default.func,renderFooter:_propTypes2.default.func};TabViewAnimated.defaultProps={canJumpToTab:function canJumpToTab(){return true;},renderPager:function renderPager(props){return React.createElement(TabViewPager,_extends({},props,{__source:{fileName:_jsxFileName,lineNumber:69}}));},initialLayout:{height:0,width:0},useNativeDriver:false};var _initialiseProps=function _initialiseProps(){var _this3=this;this._mounted=false;this._renderScene=function(props){return _this3.props.renderScene(props);};this._handleLayout=function(e){var _e$nativeEvent$layout=e.nativeEvent.layout,height=_e$nativeEvent$layout.height,width=_e$nativeEvent$layout.width;if(global.__WEB__&&window.__HTMLScale__){height=height/window.__HTMLScale__;width=width/window.__HTMLScale__;}if(_this3.state.layout.width===width&&_this3.state.layout.height===height){return;}_this3.state.offsetX.setValue(-_this3.props.navigationState.index*width);_this3.state.layoutXY.setValue({x:width||0.001,y:height||0.001});_this3.setState({layout:{measured:true,height:height,width:width}});};this._buildSceneRendererProps=function(){return{panX:_this3.state.panX,offsetX:_this3.state.offsetX,position:_this3.state.position,layout:_this3.state.layout,navigationState:_this3.props.navigationState,jumpToIndex:_this3._jumpToIndex,useNativeDriver:_this3.props.useNativeDriver===true};};this._jumpToIndex=function(index){if(!_this3._mounted){return;}var _props2=_this3.props,canJumpToTab=_props2.canJumpToTab,navigationState=_props2.navigationState;if(!canJumpToTab(navigationState.routes[index])){return;}if(index!==navigationState.index){_this3.props.onIndexChange(index);}};};exports.default=TabViewAnimated;
 
 
 var styles=_reactNative.StyleSheet.create({
